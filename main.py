@@ -117,7 +117,6 @@ class Game:
         print('You get ' + top)
         print('You now have ' + ', '.join(self.player_cards))
         self.player_total += self.convert(top[1], self.player_cards)
-        print(self.player_total)
         if self.player_total > 21:
           self.winner = 'dealer'
           break
