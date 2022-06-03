@@ -67,7 +67,7 @@ class Game:
     if choice == 'y': 
       self.bet = float(input('Place your bet: '))
       while self.bet <= 0: 
-        self.bet = float(input('Invalid bet. The minimum bet is $1'))
+        self.bet = float(input('Invalid bet. The minimum bet is $1: '))
       while self.bet > self.player_money_left:
         self.bet = float(input('Your bet is greater than the amount of money in your back account. Choose a lower bet: '))
       
