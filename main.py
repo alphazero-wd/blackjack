@@ -23,17 +23,18 @@
 from random import random
 class Game:
   def __init__(self) -> None:
-    self.cards = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A')
-    self.suits = (u"\u2666", u"\u2665", u"\u2663", u"\u2660")
+    self.cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+    self.suits = [u"\u2666", u"\u2665", u"\u2663", u"\u2660"]
     self.player_money_left = 500
     self.combinations = []
     self.player_cards = []
     self.dealer_cards = []
     self.bet = 0
     self.winner = None
+    self.ith_game = 0
 
   def convert(self, card, whose_cards):
-    if card in [str(i) for i in range(1, 11)]: return int(card)
+    if card in [str(i) for i in range(2, 11)]: return int(card)
     elif card in ['J', 'Q', 'K']: return 10
     else:
       sum_without_ace = 0
@@ -57,11 +58,12 @@ class Game:
 
   def start(self):
     while self.player_money_left > 0:
+      self.ith_game += 1
       self.select_bet()
     print('You have run out of money :(')
 
   def select_bet(self):
-    choice = input(f'You are having ${self.player_money_left} in your bank account. Do you want to play? (Type in y for yes, n for no) ')
+    choice = input(f'\nGame {self.ith_game}:\nYou are having ${self.player_money_left} in your bank account. Do you want to play? (Type in y for yes, n for no) ')
     if choice == 'y': 
       self.bet = float(input('Place your bet: '))
       while self.bet <= 0: 
@@ -79,26 +81,25 @@ class Game:
     self.dealer_cards = [self.combinations.pop(), self.combinations.pop()]
     self.dealer_total = sum([self.convert(card[1], self.dealer_cards) for card in self.dealer_cards]) 
     self.player_total = sum([self.convert(card[1], self.player_cards) for card in self.player_cards])
-
     print('You have ' + ', '.join(self.player_cards))
     print(f'The dealer has {self.dealer_cards[0]}, Unknown')
     self.handle_player_stay_or_hit()
-    self.display_results()
     self.reward()
+    self.display_results()
 
   def handle_player_stay_or_hit(self):
     while True:
       stay_or_hit = input('Would you like to stay or hit (Type in s for stay or h for hit)? ')
-      while stay_or_hit not in ('s', 'h'):
+      while stay_or_hit.lower() not in ('s', 'h', 'stay', 'hit'):
         stay_or_hit = input('Invalid choice. Would you like to stay or hit (Type in s for stay or h for hit)? ')
       if stay_or_hit.lower() == 's' or stay_or_hit.lower() == 'stay':
         while True:
+          if self.dealer_total >= 17: break
           print('The dealer has ' + ', '.join(self.dealer_cards))
           top = self.combinations.pop()
           print('The dealer gets ' + top)
           self.dealer_cards.append(top)
           self.dealer_total += self.convert(top[1], self.dealer_cards)
-          if self.dealer_total >= 17: break
         # if the dealer's total > 21 then they lose
         print('The dealer now has ' + ', '.join(self.dealer_cards))
         if self.dealer_total > 21: 
@@ -107,7 +108,7 @@ class Game:
           # otherwise, the one whose total is higher wins 
           if self.player_total > self.dealer_total: 
             self.winner = 'player'
-          else:
+          elif self.player_total < self.dealer_total:
             self.winner = 'dealer'
         break
       elif stay_or_hit.lower() == 'h' or stay_or_hit.lower() == 'hit':
@@ -116,6 +117,7 @@ class Game:
         print('You get ' + top)
         print('You now have ' + ', '.join(self.player_cards))
         self.player_total += self.convert(top[1], self.player_cards)
+        print(self.player_total)
         if self.player_total > 21:
           self.winner = 'dealer'
           break
@@ -126,6 +128,7 @@ class Game:
         print(f'The {self.winner} win. ${self.bet} has been transferred into your account :)')
       else:
         print(f'The {self.winner} wins. You lost ${abs(self.bet)} :(')
+      self.player_money_left += self.bet
     else:
       print('Tie. You have not lost anything. Keep playing!')
   
@@ -134,6 +137,5 @@ class Game:
       self.bet *= 1.5
     elif self.winner == 'dealer':
       self.bet = -self.bet
-    self.player_money_left += self.bet
 
 Game().start()
