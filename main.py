@@ -55,6 +55,7 @@ class Game:
     self.combinations = []
     self.player_total = 0 
     self.dealer_total = 0 
+    self.winner = None
 
   def start(self):
     while self.player_money_left > 0:
