@@ -67,10 +67,8 @@ class Game:
     choice = input(f'\nGame {self.ith_game}:\nYou are having ${self.player_money_left} in your bank account. Do you want to play? (Type in y for yes, n for no) ')
     if choice == 'y': 
       self.bet = float(input('Place your bet: '))
-      while self.bet <= 0: 
-        self.bet = float(input('Invalid bet. The minimum bet is $1: '))
-      while self.bet > self.player_money_left:
-        self.bet = float(input('Your bet is greater than the amount of money in your back account. Choose a lower bet: '))
+      while self.bet <= 0 or self.bet > self.player_money_left: 
+        self.bet = float(input(f'Invalid bet. The bet is between $1 and ${self.player_money_left}: '))
       
       self.reset()
       self.generate_combinations()
