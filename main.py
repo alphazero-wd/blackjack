@@ -33,6 +33,9 @@ class Game:
     self.winner = None
     self.ith_game = 0
 
+  def compute_cards_value(self, whose_cards):
+    return sum([self.convert(card[1:], whose_cards) for card in whose_cards]) 
+
   def convert(self, card, whose_cards):
     if card in [str(i) for i in range(2, 11)]: return int(card)
     elif card in ['J', 'Q', 'K']: return 10
@@ -78,8 +81,8 @@ class Game:
   def play_hand(self):
     self.player_cards = [self.combinations.pop(), self.combinations.pop()]
     self.dealer_cards = [self.combinations.pop(), self.combinations.pop()]
-    self.dealer_total = sum([self.convert(card[1:], self.dealer_cards) for card in self.dealer_cards]) 
-    self.player_total = sum([self.convert(card[1:], self.player_cards) for card in self.player_cards])
+    self.dealer_total = self.compute_cards_value(self.dealer_cards)
+    self.player_total = self.compute_cards_value(self.player_cards)
     print('You have ' + ', '.join(self.player_cards))
     print(f'The dealer has {self.dealer_cards[0]}, Unknown')
     self.handle_player_stay_or_hit()
@@ -98,7 +101,7 @@ class Game:
           top = self.combinations.pop()
           print('The dealer gets ' + top)
           self.dealer_cards.append(top)
-          self.dealer_total += self.convert(top[1:], self.dealer_cards)
+          self.dealer_total = self.compute_cards_value(self.dealer_cards)
         # if the dealer's total > 21 then they lose
         print('The dealer now has ' + ', '.join(self.dealer_cards))
         if self.dealer_total > 21: 
@@ -115,7 +118,7 @@ class Game:
         self.player_cards.append(top)
         print('You get ' + top)
         print('You now have ' + ', '.join(self.player_cards))
-        self.player_total += self.convert(top[1:], self.player_cards)
+        self.player_total = self.compute_cards_value(self.player_cards)
         if self.player_total > 21:
           self.winner = 'dealer'
           break
