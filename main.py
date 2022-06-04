@@ -32,20 +32,15 @@ class Game:
     self.bet = 0
     self.winner = None
     self.ith_game = 0
+    self.converter = { 'J': 10, 'K': 10, 'Q': 10, 'A': 1 }
+    self.converter.update({ str(i): i for i in range(2, 11) })
 
   def compute_cards_value(self, whose_cards):
-    return sum([self.convert(card[1:], whose_cards) for card in whose_cards]) 
+    hand_value = sum([self.converter[card[1:]] for card in whose_cards]) 
+    if 'A' in [card[1:] for card in whose_cards] and hand_value <= 11:
+      hand_value += 10
+    return hand_value
 
-  def convert(self, card, whose_cards):
-    if card in [str(i) for i in range(2, 11)]: return int(card)
-    elif card in ['J', 'Q', 'K']: return 10
-    else:
-      sum_without_ace = 0
-      for c in whose_cards:
-        if c[1:] != 'A':
-          sum_without_ace += self.convert(c[1:], whose_cards)
-      
-      return 11 if abs(sum_without_ace - 21) >= 11 else 1
   def generate_combinations(self):
     for suit in self.suits:
       for card in self.cards:
